@@ -76,6 +76,18 @@ export default class Keyboard {
     return this.span;
   }
 
+  pressBackspace() {
+    const { selectionStart: caret, value } = this.textarea;
+    this.textarea.value = value.substring(0, caret - 1) + value.substring(caret, value.length);
+    this.textarea.focus();
+
+    if (caret > 0) {
+      this.textarea.setSelectionRange(caret - 1, caret - 1);
+    } else {
+      this.textarea.setSelectionRange(caret - 1, caret);
+    }
+  }
+
   addTextToTextarea(newValue = '') {
     const { selectionStart: caret, value } = this.textarea;
     this.textarea.value = `${value.substring(0, caret)}${newValue}${value.substring(caret, value.length)}`;
@@ -98,6 +110,10 @@ export default class Keyboard {
 
     if (codeKey === 'space') {
       this.addTextToTextarea(' ');
+    }
+
+    if (codeKey === 'backspace') {
+      this.pressBackspace();
     }
   }
 
