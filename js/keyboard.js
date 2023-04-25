@@ -96,6 +96,10 @@ export default class Keyboard {
     this.textarea.setSelectionRange(caret, caret);
   }
 
+  pressEnter() {
+    this.addTextToTextarea('\n');
+  }
+
   addTextToTextarea(newValue = '') {
     const { selectionStart: caret, value } = this.textarea;
     this.textarea.value = `${value.substring(0, caret)}${newValue}${value.substring(caret, value.length)}`;
@@ -126,6 +130,10 @@ export default class Keyboard {
 
     if (codeKey === 'delete') {
       this.pressDelete();
+    }
+
+    if (codeKey === 'enter') {
+      this.pressEnter();
     }
   }
 
