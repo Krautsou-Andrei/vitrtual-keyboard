@@ -1,0 +1,98 @@
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  border: 0;
+  padding: 0;
+  white-space: nowrap;
+  clip-path: inset(100%);
+  clip: rect(0 0 0 0);
+  overflow: hidden;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  row-gap: 1rem;
+}
+
+.title {
+  text-align: center;
+}
+
+.textarea {
+  width: 43.75rem;
+  height: 12.5rem;
+  padding: 0.625rem;
+}
+
+.keyboard {
+  padding: 0.5rem;
+
+  border: 0.125rem solid black;
+  border-radius: 1.125rem;
+
+  display: flex;
+  flex-direction: column;
+  row-gap: 0.25rem;
+
+  background-color: azure;
+}
+
+.row {
+  display: flex;
+  column-gap: 0.25rem;
+}
+
+.key {
+  padding: 0.25rem;
+
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border-radius: 1.125rem;
+
+  background-color: gray;
+
+  user-select: none;
+
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.key:hover {
+  opacity: 0.8;
+}
+
+.key-active {
+  position: relative;
+  top: 0.125rem;
+  color: white;
+  background-color: green;
+}
+
+.backspace,
+.tab,
+.capslock,
+.enter,
+.shiftleft,
+.shiftright,
+.space {
+  flex-grow: 1;
+}
+
+.backspace,
+.tab,
+.capslock,
+.enter,
+.shiftleft,
+.shiftright {
+  max-width: 5.75rem;
+}
