@@ -1,4 +1,5 @@
 import keys from './data-keys.js';
+import serviceKeys from './data-service-key.js';
 import CssClasses from './data-css.js';
 
 const TITLE_TEXT = 'RSS Virtual keyboard';
