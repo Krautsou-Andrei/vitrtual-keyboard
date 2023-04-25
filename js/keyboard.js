@@ -100,6 +100,10 @@ export default class Keyboard {
     this.addTextToTextarea('\n');
   }
 
+  pressTab() {
+    this.addTextToTextarea('\t');
+  }
+
   addTextToTextarea(newValue = '') {
     const { selectionStart: caret, value } = this.textarea;
     this.textarea.value = `${value.substring(0, caret)}${newValue}${value.substring(caret, value.length)}`;
@@ -134,6 +138,10 @@ export default class Keyboard {
 
     if (codeKey === 'enter') {
       this.pressEnter();
+    }
+
+    if (codeKey === 'tab') {
+      this.pressTab();
     }
   }
 
