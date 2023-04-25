@@ -44,6 +44,7 @@ export default class Keyboard {
         this.key.setAttribute('id', elementKey.id.toLocaleLowerCase());
         this.key.append(this.creatTextKey(CssClasses.EN, elementKey, this.isLanguageEn));
         this.key.append(this.creatTextKey(CssClasses.RU, elementKey, this.isLanguageRu));
+        this.key.addEventListener('click', this.mouseHandler.bind(this));
         this.row.append(this.key);
       });
       keyboard.append(this.row);
@@ -60,10 +61,14 @@ export default class Keyboard {
 
   creatTextKey(language = CssClasses.EN, elementKey = {}, currentLanguage = true) {
     this.span = this.createElement('span');
-    const elementClass = currentLanguage ? CssClasses.VISIBLE : CssClasses.VISUALLY_HIDDEN;
-    this.span.classList.add(language, elementClass);
 
-    this.span.append(this.addTextToElement(this.createElement('span', CssClasses.TEXT, CssClasses.VISIBLE), elementKey[language].text));
+    if (currentLanguage) {
+      this.span.classList.add(language);
+    } else {
+      this.span.classList.add(language, CssClasses.VISUALLY_HIDDEN);
+    }
+
+    this.span.append(this.addTextToElement(this.createElement('span', CssClasses.TEXT), elementKey[language].text));
     this.span.append(this.addTextToElement(this.createElement('span', CssClasses.TEXT_SHIFT, CssClasses.VISUALLY_HIDDEN), elementKey[language].textShift));
     this.span.append(this.addTextToElement(this.createElement('span', CssClasses.TEXT_CAPS, CssClasses.VISUALLY_HIDDEN), elementKey[language].textCaps));
     this.span.append(this.addTextToElement(this.createElement('span', CssClasses.TEXT_SHIFT_CAPS, CssClasses.VISUALLY_HIDDEN), elementKey[language].textShiftCaps));
@@ -71,8 +76,29 @@ export default class Keyboard {
     return this.span;
   }
 
-  addTextToTextarea(value = '') {
-    this.textarea.value += value;
+  addTextToTextarea(newValue = '') {
+    const { selectionStart: caret, value } = this.textarea;
+    this.textarea.value = `${value.substring(0, caret)}${newValue}${value.substring(caret, value.length)}`;
+    this.textarea.focus();
+
+    this.textarea.setSelectionRange(caret + 1, caret + 1);
+  }
+
+  mouseHandler(event) {
+    const codeKey = event.currentTarget.className.split(' ')[1];
+
+    if (!serviceKeys.includes(codeKey) && codeKey !== 'space') {
+      const keyLanguage = event.currentTarget.querySelector(`.${this.currentLanguage}`);
+      const array = [...keyLanguage.childNodes];
+
+      const newText = array.filter((text) => !text.className.includes(CssClasses.VISUALLY_HIDDEN));
+
+      this.addTextToTextarea(newText[0].innerHTML);
+    }
+
+    if (codeKey === 'space') {
+      this.addTextToTextarea(' ');
+    }
   }
 
   setCurrentLanguage(isLanguageRu = this.isLanguageRu) {
