@@ -18,6 +18,7 @@ export default class Keyboard {
     this.isLanguageRu = false;
     this.isLanguageEn = true;
     this.currentLanguage = null;
+    this.isCapsLock = false;
 
     this.init();
   }
@@ -104,6 +105,22 @@ export default class Keyboard {
     this.addTextToTextarea('\t');
   }
 
+  pressCapsLock(event) {
+    const textLowerCase = this.keyboard.querySelectorAll(`.${CssClasses.TEXT}`);
+    const textUpperCase = this.keyboard.querySelectorAll(`.${CssClasses.TEXT_CAPS}`);
+    event.currentTarget.classList.toggle(CssClasses.KEY_ACTIVE);
+
+    textLowerCase.forEach((textKey) => {
+      textKey.classList.toggle(`${CssClasses.VISUALLY_HIDDEN}`);
+    });
+
+    textUpperCase.forEach((textKey) => {
+      textKey.classList.toggle(`${CssClasses.VISUALLY_HIDDEN}`);
+    });
+
+    this.isCapsLock = !this.isCapsLock;
+  }
+
   addTextToTextarea(newValue = '') {
     const { selectionStart: caret, value } = this.textarea;
     this.textarea.value = `${value.substring(0, caret)}${newValue}${value.substring(caret, value.length)}`;
@@ -142,6 +159,10 @@ export default class Keyboard {
 
     if (codeKey === 'tab') {
       this.pressTab();
+    }
+
+    if (codeKey === 'capslock') {
+      this.pressCapsLock(event);
     }
   }
 
