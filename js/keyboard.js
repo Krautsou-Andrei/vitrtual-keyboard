@@ -46,6 +46,8 @@ export default class Keyboard {
         this.key.append(this.creatTextKey(CssClasses.EN, elementKey, this.isLanguageEn));
         this.key.append(this.creatTextKey(CssClasses.RU, elementKey, this.isLanguageRu));
         this.key.addEventListener('click', this.mouseHandler.bind(this));
+        this.key.addEventListener('mousedown', this.mousedownHandler.bind(this));
+        this.key.addEventListener('mouseup', this.mouseupHandler.bind(this));
         this.row.append(this.key);
       });
       keyboard.append(this.row);
@@ -163,6 +165,22 @@ export default class Keyboard {
 
     if (codeKey === 'capslock') {
       this.pressCapsLock(event);
+    }
+  }
+
+  mousedownHandler(event) {
+    const codeKey = event.currentTarget.className.split(' ')[1];
+
+    if (codeKey !== 'capslock') {
+      event.currentTarget.classList.add(CssClasses.KEY_ACTIVE);
+    }
+  }
+
+  mouseupHandler(event) {
+    const codeKey = event.currentTarget.className.split(' ')[1];
+
+    if (codeKey !== 'capslock') {
+      event.currentTarget.classList.remove(CssClasses.KEY_ACTIVE);
     }
   }
 
