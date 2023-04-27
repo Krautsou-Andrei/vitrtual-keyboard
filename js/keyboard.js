@@ -28,12 +28,17 @@ export default class Keyboard {
     this.title = this.createElement('h1', CssClasses.TITLE);
     this.textarea = this.createElement('textarea', CssClasses.TEXT_AREA);
     this.keyboard = this.creatKeyboard();
-    this.currentLanguage = this.setCurrentLanguage();
 
     this.title.innerHTML = TITLE_TEXT;
     this.body.append(this.title);
     this.body.append(this.textarea);
     this.body.append(this.keyboard);
+
+    if (this.currentLanguage === localStorage.getItem('language')) {
+      this.currentLanguage = this.setCurrentLanguage();
+    } else {
+      this.currentLanguage = this.setCurrentLanguage(!this.isLanguageRu);
+    }
 
     document.addEventListener('keydown', this.mouseHandler.bind(this));
     document.addEventListener('keydown', this.mousedownHandler.bind(this));
@@ -294,7 +299,7 @@ export default class Keyboard {
       Array.from(this.keyboard.querySelectorAll(`.${CssClasses.EN}`)).forEach((element) => element.classList.add(CssClasses.VISUALLY_HIDDEN));
       this.isLanguageRu = isLanguageRu;
       this.isLanguageEn = !isLanguageRu;
-
+      localStorage.setItem('language', 'ru');
       return CssClasses.RU;
     }
 
@@ -302,7 +307,7 @@ export default class Keyboard {
     Array.from(this.keyboard.querySelectorAll(`.${CssClasses.RU}`)).forEach((element) => element.classList.add(CssClasses.VISUALLY_HIDDEN));
     this.isLanguageRu = isLanguageRu;
     this.isLanguageEn = !isLanguageRu;
-
+    localStorage.setItem('language', 'en');
     return CssClasses.EN;
   }
 
