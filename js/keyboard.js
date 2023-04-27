@@ -17,7 +17,7 @@ export default class Keyboard {
     this.element = null;
     this.isLanguageRu = false;
     this.isLanguageEn = true;
-    this.currentLanguage = null;
+    this.currentLanguage = 'en';
     this.isCapsLock = false;
     this.isShift = false;
 
@@ -34,6 +34,10 @@ export default class Keyboard {
     this.body.append(this.title);
     this.body.append(this.textarea);
     this.body.append(this.keyboard);
+
+    document.addEventListener('keydown', this.mouseHandler.bind(this));
+    document.addEventListener('keydown', this.mousedownHandler.bind(this));
+    document.addEventListener('keyup', this.mouseupHandler.bind(this));
   }
 
   creatKeyboard() {
@@ -49,6 +53,7 @@ export default class Keyboard {
         this.key.addEventListener('click', this.mouseHandler.bind(this));
         this.key.addEventListener('mousedown', this.mousedownHandler.bind(this));
         this.key.addEventListener('mouseup', this.mouseupHandler.bind(this));
+
         this.row.append(this.key);
       });
 
@@ -104,10 +109,11 @@ export default class Keyboard {
     this.addTextToTextarea('\t');
   }
 
-  pressCapsLock(event) {
+  pressCapsLock() {
     const textLowerCase = this.keyboard.querySelectorAll(`.${CssClasses.TEXT}`);
     const textUpperCase = this.keyboard.querySelectorAll(`.${CssClasses.TEXT_CAPS}`);
-    event.currentTarget.classList.toggle(CssClasses.KEY_ACTIVE);
+
+    this.keyboard.querySelector('.capslock').classList.toggle(CssClasses.KEY_ACTIVE);
 
     textLowerCase.forEach((textKey) => {
       textKey.classList.toggle(`${CssClasses.VISUALLY_HIDDEN}`);
@@ -155,15 +161,46 @@ export default class Keyboard {
   }
 
   mouseHandler(event) {
-    const codeKey = event.currentTarget.className.split(' ')[1];
+    event.preventDefault();
+    let codeKey = null;
+    if (event.type === 'click') {
+      [, codeKey] = event.currentTarget.className.split(' ');
 
-    if (!serviceKeys.includes(codeKey) && codeKey !== 'space') {
-      const keyLanguage = event.currentTarget.querySelector(`.${this.currentLanguage}`);
-      const array = [...keyLanguage.childNodes];
+      if (!serviceKeys.includes(codeKey) && codeKey !== 'space') {
+        const keyLanguage = event.currentTarget.querySelector(`.${this.currentLanguage}`);
+        const array = [...keyLanguage.childNodes];
 
-      const newText = array.filter((text) => !text.className.includes(CssClasses.VISUALLY_HIDDEN));
+        const hidden = CssClasses.VISUALLY_HIDDEN;
 
-      this.addTextToTextarea(newText[0].innerHTML);
+        const newText = array.filter((text) => !text.className.includes(hidden));
+
+        this.addTextToTextarea(newText[0].innerHTML);
+      }
+
+      if (codeKey === 'capslock') {
+        this.pressCapsLock(event);
+      }
+    }
+
+    if (event.type === 'keydown') {
+      codeKey = event.code.toLocaleLowerCase();
+
+      if (!serviceKeys.includes(codeKey) && codeKey !== 'space') {
+        const keyLanguage = this.keyboard.querySelector(`.${codeKey}`).querySelector(`.${this.currentLanguage}`);
+
+        const array = [...keyLanguage.childNodes];
+        const hidden = CssClasses.VISUALLY_HIDDEN;
+
+        const newText = array.filter((text) => !text.className.includes(hidden));
+
+        this.addTextToTextarea(newText[0].innerHTML);
+      }
+
+      if (codeKey === 'capslock') {
+        if (event.repeat === false) {
+          this.pressCapsLock(event);
+        }
+      }
     }
 
     if (codeKey === 'space') {
@@ -185,37 +222,69 @@ export default class Keyboard {
     if (codeKey === 'tab') {
       this.pressTab();
     }
-
-    if (codeKey === 'capslock') {
-      this.pressCapsLock(event);
-    }
-
-    if ((codeKey === 'altleft' || codeKey === 'altright') && (codeKey === 'controlleft' || codeKey === 'controlright')) {
-      this.currentLanguage = this.setCurrentLanguage(this.isLanguageRu);
-    }
   }
 
   mousedownHandler(event) {
-    const codeKey = event.currentTarget.className.split(' ')[1];
+    event.preventDefault();
+    let codeKey = null;
 
-    if (codeKey !== 'capslock') {
-      event.currentTarget.classList.add(CssClasses.KEY_ACTIVE);
+    if (event.type === 'mousedown') {
+      [, codeKey] = event.currentTarget.className.split(' ');
+
+      if (codeKey !== 'capslock') {
+        event.currentTarget.classList.add(CssClasses.KEY_ACTIVE);
+      }
+
+      if (codeKey === 'shiftleft' || codeKey === 'shiftright') {
+        this.pressShift();
+      }
     }
 
-    if (codeKey === 'shiftleft' || codeKey === 'shiftright') {
-      this.pressShift();
+    if (event.type === 'keydown') {
+      codeKey = event.code.toLocaleLowerCase();
+
+      if (codeKey !== 'capslock') {
+        this.keyboard.querySelector(`.${codeKey}`).classList.add(CssClasses.KEY_ACTIVE);
+      }
+
+      if (codeKey === 'shiftleft' || codeKey === 'shiftright') {
+        if (event.repeat === false) {
+          this.pressShift();
+        }
+      }
+
+      if (event.altKey && event.ctrlKey) {
+        this.currentLanguage = this.setCurrentLanguage(!this.isLanguageRu);
+      }
     }
   }
 
   mouseupHandler(event) {
-    const codeKey = event.currentTarget.className.split(' ')[1];
+    event.preventDefault();
+    let codeKey = null;
 
-    if (codeKey !== 'capslock') {
-      event.currentTarget.classList.remove(CssClasses.KEY_ACTIVE);
+    if (event.type === 'mouseup') {
+      [, codeKey] = event.currentTarget.className.split(' ');
+
+      if (codeKey !== 'capslock') {
+        event.currentTarget.classList.remove(CssClasses.KEY_ACTIVE);
+      }
+
+      if (codeKey === 'shiftleft' || codeKey === 'shiftright') {
+        this.pressShift();
+      }
     }
 
-    if (codeKey === 'shiftleft' || codeKey === 'shiftright') {
-      this.pressShift();
+    if (event.type === 'keyup') {
+      codeKey = event.code.toLocaleLowerCase();
+
+      if (codeKey !== 'capslock') {
+        this.keyboard.querySelector(`.${codeKey}`).classList.remove(CssClasses.KEY_ACTIVE);
+      }
+
+      if (codeKey === 'shiftleft' || codeKey === 'shiftright') {
+        this.pressShift();
+      }
     }
   }
 
@@ -223,15 +292,17 @@ export default class Keyboard {
     if (isLanguageRu) {
       Array.from(this.keyboard.querySelectorAll(`.${CssClasses.RU}`)).forEach((element) => element.classList.remove(CssClasses.VISUALLY_HIDDEN));
       Array.from(this.keyboard.querySelectorAll(`.${CssClasses.EN}`)).forEach((element) => element.classList.add(CssClasses.VISUALLY_HIDDEN));
-      this.isLanguageRu = !this.isLanguageRu;
-      this.isLanguageEn = !this.isLanguageEn;
+      this.isLanguageRu = isLanguageRu;
+      this.isLanguageEn = !isLanguageRu;
+
       return CssClasses.RU;
     }
 
     Array.from(this.keyboard.querySelectorAll(`.${CssClasses.EN}`)).forEach((element) => element.classList.remove(CssClasses.VISUALLY_HIDDEN));
     Array.from(this.keyboard.querySelectorAll(`.${CssClasses.RU}`)).forEach((element) => element.classList.add(CssClasses.VISUALLY_HIDDEN));
-    this.isLanguageRu = !this.isLanguageRu;
-    this.isLanguageEn = !this.isLanguageEn;
+    this.isLanguageRu = isLanguageRu;
+    this.isLanguageEn = !isLanguageRu;
+
     return CssClasses.EN;
   }
 
