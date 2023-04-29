@@ -3,12 +3,14 @@ import serviceKeys from './data-service-key.js';
 import CssClasses from './data-css.js';
 
 const TITLE_TEXT = 'RSS Virtual keyboard';
+const DESCRIPTION = 'Клавиатура создана в операционной системе Windows. Для переключения языка комбинация: ctrl + alt';
 
 export default class Keyboard {
   constructor(node) {
     this.body = node;
     this.keyboard = null;
     this.title = null;
+    this.description = null;
     this.textarea = null;
     this.row = null;
     this.key = null;
@@ -28,11 +30,14 @@ export default class Keyboard {
     this.title = this.createElement('h1', CssClasses.TITLE);
     this.textarea = this.createElement('textarea', CssClasses.TEXT_AREA);
     this.keyboard = this.creatKeyboard();
+    this.description = this.createElement('p');
 
     this.title.innerHTML = TITLE_TEXT;
+    this.description.innerHTML = DESCRIPTION;
     this.body.append(this.title);
     this.body.append(this.textarea);
     this.body.append(this.keyboard);
+    this.body.append(this.description);
 
     if (this.currentLanguage === localStorage.getItem('language')) {
       this.currentLanguage = this.setCurrentLanguage();
